@@ -29,7 +29,11 @@ print("\nExtracting baseball database...\n")
 
 # Extract zip containing baseball data
 with zipfile.ZipFile(filename) as archive:
-    with tqdm(total=100) as pbar:
+    total_size = 0
+    for info in archive.infolist():
+        total_size += info.file_size
+
+    with tqdm(total=total_size, unit = 'B', unit_scale=True, unit_divisor=1024) as pbar:
         for info in archive.infolist():
             archive.extract(info.filename, output_directory)
-            pbar.update(10)
+            pbar.update(info.file_size)
