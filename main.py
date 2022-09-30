@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-# Progress Bar
+# urllib progress bar callback class
 class TqdmUpTo(tqdm):
     def update_to(self, b=1, bsize=1, tsize=None):
         if tsize is not None:
