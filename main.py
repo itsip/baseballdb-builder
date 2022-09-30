@@ -1,6 +1,9 @@
 import os
 import urllib.request
+import zipfile
 from tqdm import tqdm
+
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # Progress Bar
 class TqdmUpTo(tqdm):
@@ -8,8 +11,6 @@ class TqdmUpTo(tqdm):
         if tsize is not None:
             self.total = tsize
         return self.update(b * bsize - self.n)  # also sets self.n = b * bsize
-
-PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 default_version = 'v2022.2'
 
@@ -21,3 +22,14 @@ print("Downloading baseball database...\n")
 # Download baseball data w/ progress bar
 with TqdmUpTo(unit = 'B', unit_scale=True, unit_divisor=1024, miniters=1) as t:
     urllib.request.urlretrieve(url, filename, t.update_to)
+
+output_directory = "%s/data" % (PROJECT_ROOT)
+
+print("\nExtracting baseball database...\n")
+
+# Extract zip containing baseball data
+with zipfile.ZipFile(filename) as archive:
+    with tqdm(total=100) as pbar:
+        for info in archive.infolist():
+            archive.extract(info.filename, output_directory)
+            pbar.update(10)
