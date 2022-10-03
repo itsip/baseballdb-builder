@@ -47,4 +47,4 @@ port = '5432'
 schema_filename = '%s/db/schema.sql' % (PROJECT_ROOT)
 
 subprocess.run(['createdb', db_name])
-subprocess.run(['psql', '-h', host, '-p', port, '-d', db_name, '-f', schema_filename]);
+subprocess.run(['psql', '-h', host, '-p', port, '-d', db_name, '-f', schema_filename])
