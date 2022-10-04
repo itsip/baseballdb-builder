@@ -41,7 +41,7 @@ with zipfile.ZipFile(filename) as archive:
 
 print('\nCreating "baseball" database\n')
 
-db_name = 'baseball_db'
+db_name = 'baseball'
 host = 'localhost'
 port = '5432'
 schema_filename = '%s/db/schema.sql' % (PROJECT_ROOT)
