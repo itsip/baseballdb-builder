@@ -26,9 +26,9 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.allstar_full (
     player_id character varying NOT NULL,
-    year_id integer,
+    year_id integer NOT NULL,
     game_num integer,
-    game_id character varying NOT NULL,
+    game_id character varying,
     team_id character varying,
     lg_id character varying,
     gp integer,
@@ -242,9 +242,9 @@ CREATE TABLE public.fielding_of_split (
     player_id character varying NOT NULL,
     year_id integer NOT NULL,
     stint integer NOT NULL,
-    team_id character varying,
+    team_id character varying NOT NULL,
     lgid character varying,
-    pos integer,
+    pos character varying NOT NULL,
     g integer,
     gs integer,
     innouts integer,
@@ -269,8 +269,8 @@ CREATE TABLE public.fielding_post (
     year_id integer NOT NULL,
     team_id character varying,
     lg_id character varying,
-    round_id integer NOT NULL,
-    pos integer,
+    round_id character varying NOT NULL,
+    pos character varying NOT NULL,
     g integer,
     gs integer,
     inn_outs integer,
@@ -525,7 +525,7 @@ CREATE TABLE public.series_post (
 --
 
 CREATE TABLE public.teams (
-    year_id integer,
+    year_id integer NOT NULL,
     lg_id character varying,
     team_id character varying NOT NULL,
     franch_id character varying,
@@ -611,7 +611,7 @@ CREATE TABLE public.teams_half (
 --
 
 ALTER TABLE ONLY public.allstar_full
-    ADD CONSTRAINT allstar_full_pkey PRIMARY KEY (player_id, game_id);
+    ADD CONSTRAINT allstar_full_pkey PRIMARY KEY (player_id, year_id);
 
 
 --
@@ -691,7 +691,7 @@ ALTER TABLE ONLY public.fielding_of
 --
 
 ALTER TABLE ONLY public.fielding_of_split
-    ADD CONSTRAINT fielding_of_split_pkey PRIMARY KEY (player_id, year_id, stint);
+    ADD CONSTRAINT fielding_of_split_pkey PRIMARY KEY (player_id, year_id, stint, team_id, pos);
 
 
 --
@@ -707,7 +707,7 @@ ALTER TABLE ONLY public.fielding
 --
 
 ALTER TABLE ONLY public.fielding_post
-    ADD CONSTRAINT fielding_post_pkey PRIMARY KEY (player_id, year_id, round_id);
+    ADD CONSTRAINT fielding_post_pkey PRIMARY KEY (player_id, year_id, round_id, pos);
 
 
 --
@@ -811,7 +811,7 @@ ALTER TABLE ONLY public.teams_franchises
 --
 
 ALTER TABLE ONLY public.teams
-    ADD CONSTRAINT teams_pkey PRIMARY KEY (team_id);
+    ADD CONSTRAINT teams_pkey PRIMARY KEY (year_id, team_id);
 
 
 --
@@ -823,11 +823,11 @@ ALTER TABLE ONLY public.allstar_full
 
 
 --
--- Name: allstar_full allstar_full_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: allstar_full allstar_full_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.allstar_full
-    ADD CONSTRAINT allstar_full_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT allstar_full_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
@@ -839,11 +839,11 @@ ALTER TABLE ONLY public.appearances
 
 
 --
--- Name: appearances appearances_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: appearances appearances_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.appearances
-    ADD CONSTRAINT appearances_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT appearances_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
@@ -895,19 +895,19 @@ ALTER TABLE ONLY public.batting_post
 
 
 --
--- Name: batting_post batting_post_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: batting_post batting_post_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.batting_post
-    ADD CONSTRAINT batting_post_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT batting_post_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
--- Name: batting batting_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: batting batting_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.batting
-    ADD CONSTRAINT batting_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT batting_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
@@ -943,11 +943,11 @@ ALTER TABLE ONLY public.fielding_of_split
 
 
 --
--- Name: fielding_of_split fielding_of_split_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fielding_of_split fielding_of_split_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.fielding_of_split
-    ADD CONSTRAINT fielding_of_split_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT fielding_of_split_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
@@ -967,19 +967,19 @@ ALTER TABLE ONLY public.fielding_post
 
 
 --
--- Name: fielding_post fielding_post_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fielding_post fielding_post_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.fielding_post
-    ADD CONSTRAINT fielding_post_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT fielding_post_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
--- Name: fielding fielding_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fielding fielding_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.fielding
-    ADD CONSTRAINT fielding_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT fielding_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
@@ -999,11 +999,11 @@ ALTER TABLE ONLY public.home_games
 
 
 --
--- Name: home_games home_games_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: home_games home_games_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.home_games
-    ADD CONSTRAINT home_games_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT home_games_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
@@ -1015,11 +1015,11 @@ ALTER TABLE ONLY public.managers_half
 
 
 --
--- Name: managers_half managers_half_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: managers_half managers_half_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.managers_half
-    ADD CONSTRAINT managers_half_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT managers_half_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
@@ -1031,11 +1031,11 @@ ALTER TABLE ONLY public.managers
 
 
 --
--- Name: managers managers_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: managers managers_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.managers
-    ADD CONSTRAINT managers_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT managers_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
@@ -1055,19 +1055,19 @@ ALTER TABLE ONLY public.pitching_post
 
 
 --
--- Name: pitching_post pitching_post_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: pitching_post pitching_post_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.pitching_post
-    ADD CONSTRAINT pitching_post_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT pitching_post_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
--- Name: pitching pitching_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: pitching pitching_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.pitching
-    ADD CONSTRAINT pitching_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT pitching_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
@@ -1079,27 +1079,27 @@ ALTER TABLE ONLY public.salaries
 
 
 --
--- Name: salaries salaries_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: salaries salaries_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.salaries
-    ADD CONSTRAINT salaries_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT salaries_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
--- Name: series_post series_post_team_id_loser_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.series_post
-    ADD CONSTRAINT series_post_team_id_loser_fkey FOREIGN KEY (team_id_loser) REFERENCES public.teams(team_id);
-
-
---
--- Name: series_post series_post_team_id_winner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: series_post series_post_year_id_team_id_loser_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.series_post
-    ADD CONSTRAINT series_post_team_id_winner_fkey FOREIGN KEY (team_id_winner) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT series_post_year_id_team_id_loser_fkey FOREIGN KEY (year_id, team_id_loser) REFERENCES public.teams(year_id, team_id);
+
+
+--
+-- Name: series_post series_post_year_id_team_id_winner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.series_post
+    ADD CONSTRAINT series_post_year_id_team_id_winner_fkey FOREIGN KEY (year_id, team_id_winner) REFERENCES public.teams(year_id, team_id);
 
 
 --
@@ -1111,11 +1111,11 @@ ALTER TABLE ONLY public.teams
 
 
 --
--- Name: teams_half teams_half_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: teams_half teams_half_year_id_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.teams_half
-    ADD CONSTRAINT teams_half_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.teams(team_id);
+    ADD CONSTRAINT teams_half_year_id_team_id_fkey FOREIGN KEY (year_id, team_id) REFERENCES public.teams(year_id, team_id);
 
 
 --
