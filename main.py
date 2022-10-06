@@ -24,7 +24,7 @@ download_dir = '%s/download' % (PROJECT_ROOT)
 subprocess.run(['mkdir', download_dir])
 filename = '%s/%s.zip' % (download_dir, version)
 
-print('Downloading baseball data...\n')
+print('Downloading baseball data...')
 
 # Download baseball data
 urllib.request.urlretrieve(url, filename)
@@ -32,7 +32,7 @@ urllib.request.urlretrieve(url, filename)
 data_dir = '%s/data' % (PROJECT_ROOT)
 subprocess.run(['mkdir', data_dir])
 
-print('Extracting baseball data...\n')
+print('Extracting baseball data...')
 
 # Extract zip containing baseball data
 with zipfile.ZipFile(filename) as archive:
@@ -55,12 +55,12 @@ host = 'localhost'
 port = '5432'
 schema_filename = '%s/db/schema.sql' % (PROJECT_ROOT)
 
-print('Creating database named "baseball"...\n')
+print('Creating database named "baseball"...')
 
 # Create database
 subprocess.run(['createdb', db_name])
 
-print('Creating schema for "baseball"...\n')
+print('Creating schema for "baseball"...')
 
 # Create schema
 subprocess.run(['psql', '-h', host, '-p', port, '-d', db_name, '-f', schema_filename], stdout=subprocess.DEVNULL)
@@ -77,7 +77,7 @@ for table in core_tables:
     filename = eol_pattern.sub(r'.csv', underscore_pattern.sub(r'', table))
     copy_commands += copy_query % (table, core_data_dir, filename)
 
-print('Copying core data to "baseball"...\n')
+print('Copying core data to "baseball"...')
 
 # Copy core data
 subprocess.run(['psql', '-h', host, '-p', port, '-d', db_name, '-c', copy_commands], stdout=subprocess.DEVNULL)
