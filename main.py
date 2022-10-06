@@ -14,6 +14,15 @@ def remove_line(filename, line_number):
                 file.write(line)
                 i += 1
 
+def get_copy_commands(tables, dir):
+    copy_query = 'COPY %s FROM \'%s/%s\' WITH DELIMITER \',\' CSV HEADER;\n'
+    eol_pattern = re.compile(r'$')
+    underscore_pattern = re.compile(r'\_')
+    copy_commands = ''
+    for table in tables:
+        filename = eol_pattern.sub(r'.csv', underscore_pattern.sub(r'', table))
+        copy_commands += copy_query % (table, dir, filename)
+    return copy_commands
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -65,23 +74,31 @@ print('Creating schema for "baseball"...')
 # Create schema
 subprocess.run(['psql', '-h', host, '-p', port, '-d', db_name, '-f', schema_filename], stdout=subprocess.DEVNULL)
 
-copy_query = 'COPY %s FROM \'%s/%s\' WITH DELIMITER \',\' CSV HEADER;\n'
-eol_pattern = re.compile(r'$')
-underscore_pattern = re.compile(r'\_')
-copy_commands = ''
-core_tables = [ 'People', 'Teams_Franchises', 'Teams', 'Parks', 'Managers', 'Fielding', 'Pitching_Post', 'Appearances', 'Batting',
-          'Managers_Half', 'Fielding_OF', 'Pitching', 'Home_Games', 'Batting_Post', 'Teams_Half', 'Series_Post', 'Fielding_Post',
-          'Allstar_Full', 'Fielding_OF_split' ]
+core_tables = [ 'People', 'Teams_Franchises', 'Teams', 'Parks', 'Managers', 'Fielding',
+               'Pitching_Post', 'Appearances', 'Batting', 'Managers_Half', 'Fielding_OF',
+               'Pitching', 'Home_Games', 'Batting_Post', 'Teams_Half', 'Series_Post',
+               'Fielding_Post', 'Allstar_Full', 'Fielding_OF_split' ]
 
-for table in core_tables:
-    filename = eol_pattern.sub(r'.csv', underscore_pattern.sub(r'', table))
-    copy_commands += copy_query % (table, core_data_dir, filename)
+copy_commands = get_copy_commands(core_tables, core_data_dir)
 
 print('Copying core data to "baseball"...')
 
 # Copy core data
 subprocess.run(['psql', '-h', host, '-p', port, '-d', db_name, '-c', copy_commands], stdout=subprocess.DEVNULL)
 
+contrib_tables = [ 'Awards_Managers', 'Awards_Players', 'Awards_Share_Managers',
+                  'Awards_Share_Players', 'College_Playing', 'Hall_Of_Fame',
+                  'Salaries', 'Schools' ]
+
+copy_commands = get_copy_commands(contrib_tables, contrib_data_dir)
+
+print('Copying contrib data to "baseball"...')
+
+# Copy contrib data
+subprocess.run(['psql', '-h', host, '-p', port, '-d', db_name, '-c', copy_commands], stdout=subprocess.DEVNULL)
+
 # Remove temp directories
 subprocess.run(['rm', '-r', data_dir])
 subprocess.run(['rm', '-r', download_dir])
+
+print('Success')
