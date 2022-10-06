@@ -80,7 +80,7 @@ for table in core_tables:
 print('Copying core data to "baseball"...\n')
 
 # Copy core data
-subprocess.run(['psql', '-h', host, '-p', port, '-d', db_name, '-c', copy_commands])
+subprocess.run(['psql', '-h', host, '-p', port, '-d', db_name, '-c', copy_commands], stdout=subprocess.DEVNULL)
 
 # Remove temp directories
 subprocess.run(['rm', '-r', data_dir])
