@@ -32,7 +32,7 @@ urllib.request.urlretrieve(url, filename)
 data_dir = '%s/data' % (PROJECT_ROOT)
 subprocess.run(['mkdir', data_dir])
 
-print('\nExtracting baseball data...\n')
+print('Extracting baseball data...\n')
 
 # Extract zip containing baseball data
 with zipfile.ZipFile(filename) as archive:
