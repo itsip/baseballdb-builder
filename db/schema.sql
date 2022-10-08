@@ -25,6 +25,7 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.allstar_full (
+    id serial primary key,
     player_id character varying NOT NULL,
     year_id integer NOT NULL,
     game_num integer,
@@ -41,6 +42,7 @@ CREATE TABLE public.allstar_full (
 --
 
 CREATE TABLE public.appearances (
+    id serial primary key,
     year_id integer NOT NULL,
     team_id character varying NOT NULL,
     lg_id character varying,
@@ -70,6 +72,7 @@ CREATE TABLE public.appearances (
 --
 
 CREATE TABLE public.awards_managers (
+    id serial primary key,
     player_id character varying NOT NULL,
     award_id character varying NOT NULL,
     year_id integer NOT NULL,
@@ -84,6 +87,7 @@ CREATE TABLE public.awards_managers (
 --
 
 CREATE TABLE public.awards_players (
+    id serial primary key,
     player_id character varying NOT NULL,
     award_id character varying NOT NULL,
     year_id integer NOT NULL,
@@ -98,6 +102,7 @@ CREATE TABLE public.awards_players (
 --
 
 CREATE TABLE public.awards_share_managers (
+    id serial primary key,
     award_id character varying NOT NULL,
     year_id integer NOT NULL,
     lg_id character varying,
@@ -113,6 +118,7 @@ CREATE TABLE public.awards_share_managers (
 --
 
 CREATE TABLE public.awards_share_players (
+    id serial primary key,
     award_id character varying NOT NULL,
     year_id integer NOT NULL,
     lg_id character varying,
@@ -128,6 +134,7 @@ CREATE TABLE public.awards_share_players (
 --
 
 CREATE TABLE public.batting (
+    id serial primary key,
     player_id character varying NOT NULL,
     year_id integer NOT NULL,
     stint integer NOT NULL,
@@ -158,6 +165,7 @@ CREATE TABLE public.batting (
 --
 
 CREATE TABLE public.batting_post (
+    id serial primary key,
     year_id integer NOT NULL,
     round_id character varying NOT NULL,
     player_id character varying NOT NULL,
@@ -188,6 +196,7 @@ CREATE TABLE public.batting_post (
 --
 
 CREATE TABLE public.college_playing (
+    id serial primary key,
     player_id character varying NOT NULL,
     school_id character varying NOT NULL,
     year_id integer NOT NULL
@@ -199,6 +208,7 @@ CREATE TABLE public.college_playing (
 --
 
 CREATE TABLE public.fielding (
+    id serial primary key,
     player_id character varying NOT NULL,
     year_id integer NOT NULL,
     stint integer NOT NULL,
@@ -225,6 +235,7 @@ CREATE TABLE public.fielding (
 --
 
 CREATE TABLE public.fielding_of (
+    id serial primary key,
     player_id character varying NOT NULL,
     year_id integer NOT NULL,
     stint integer NOT NULL,
@@ -239,6 +250,7 @@ CREATE TABLE public.fielding_of (
 --
 
 CREATE TABLE public.fielding_of_split (
+    id serial primary key,
     player_id character varying NOT NULL,
     year_id integer NOT NULL,
     stint integer NOT NULL,
@@ -265,6 +277,7 @@ CREATE TABLE public.fielding_of_split (
 --
 
 CREATE TABLE public.fielding_post (
+    id serial primary key,
     player_id character varying NOT NULL,
     year_id integer NOT NULL,
     team_id character varying,
@@ -290,6 +303,7 @@ CREATE TABLE public.fielding_post (
 --
 
 CREATE TABLE public.hall_of_fame (
+    id serial primary key,
     player_id character varying NOT NULL,
     year_id integer NOT NULL,
     voted_by character varying,
@@ -307,6 +321,7 @@ CREATE TABLE public.hall_of_fame (
 --
 
 CREATE TABLE public.home_games (
+    id serial primary key,
     year_id integer NOT NULL,
     league_id character varying,
     team_id character varying NOT NULL,
@@ -324,6 +339,7 @@ CREATE TABLE public.home_games (
 --
 
 CREATE TABLE public.managers (
+    id serial primary key,
     player_id character varying NOT NULL,
     year_id integer NOT NULL,
     team_id character varying NOT NULL,
@@ -342,6 +358,7 @@ CREATE TABLE public.managers (
 --
 
 CREATE TABLE public.managers_half (
+    id serial primary key,
     player_id character varying NOT NULL,
     year_id integer NOT NULL,
     team_id character varying NOT NULL,
@@ -360,6 +377,7 @@ CREATE TABLE public.managers_half (
 --
 
 CREATE TABLE public.parks (
+    id serial primary key,
     park_id character varying NOT NULL,
     park_name character varying,
     park_alias character varying,
@@ -374,6 +392,7 @@ CREATE TABLE public.parks (
 --
 
 CREATE TABLE public.people (
+    id serial primary key,
     player_id character varying NOT NULL,
     birth_year integer,
     birth_month integer,
@@ -406,6 +425,7 @@ CREATE TABLE public.people (
 --
 
 CREATE TABLE public.pitching (
+    id serial primary key,
     player_id character varying NOT NULL,
     year_id integer NOT NULL,
     stint integer NOT NULL,
@@ -444,6 +464,7 @@ CREATE TABLE public.pitching (
 --
 
 CREATE TABLE public.pitching_post (
+    id serial primary key,
     player_id character varying NOT NULL,
     year_id integer NOT NULL,
     round_id character varying NOT NULL,
@@ -482,6 +503,7 @@ CREATE TABLE public.pitching_post (
 --
 
 CREATE TABLE public.salaries (
+    id serial primary key,
     year_id integer NOT NULL,
     team_id character varying NOT NULL,
     lg_id character varying,
@@ -495,6 +517,7 @@ CREATE TABLE public.salaries (
 --
 
 CREATE TABLE public.schools (
+    id serial primary key,
     school_id character varying NOT NULL,
     name_full character varying,
     city character varying,
@@ -508,6 +531,7 @@ CREATE TABLE public.schools (
 --
 
 CREATE TABLE public.series_post (
+    id serial primary key,
     year_id integer NOT NULL,
     round_id character varying NOT NULL,
     team_id_winner character varying,
@@ -525,6 +549,7 @@ CREATE TABLE public.series_post (
 --
 
 CREATE TABLE public.teams (
+    id serial primary key,
     year_id integer NOT NULL,
     lg_id character varying,
     team_id character varying NOT NULL,
@@ -581,6 +606,7 @@ CREATE TABLE public.teams (
 --
 
 CREATE TABLE public.teams_franchises (
+    id serial primary key,
     franch_id character varying NOT NULL,
     franch_name character varying,
     active character varying,
@@ -593,6 +619,7 @@ CREATE TABLE public.teams_franchises (
 --
 
 CREATE TABLE public.teams_half (
+    id serial primary key,
     year_id integer,
     lg_id character varying,
     team_id character varying,
@@ -604,214 +631,6 @@ CREATE TABLE public.teams_half (
     w integer,
     l integer
 );
-
-
---
--- Name: allstar_full allstar_full_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.allstar_full
-    ADD CONSTRAINT allstar_full_pkey PRIMARY KEY (player_id, year_id);
-
-
---
--- Name: appearances appearances_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.appearances
-    ADD CONSTRAINT appearances_pkey PRIMARY KEY (year_id, team_id, player_id);
-
-
---
--- Name: awards_managers awards_managers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.awards_managers
-    ADD CONSTRAINT awards_managers_pkey PRIMARY KEY (player_id, award_id, year_id);
-
-
---
--- Name: awards_players awards_players_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.awards_players
-    ADD CONSTRAINT awards_players_pkey PRIMARY KEY (player_id, award_id, year_id);
-
-
---
--- Name: awards_share_managers awards_share_managers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.awards_share_managers
-    ADD CONSTRAINT awards_share_managers_pkey PRIMARY KEY (award_id, year_id, player_id);
-
-
---
--- Name: awards_share_players awards_share_players_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.awards_share_players
-    ADD CONSTRAINT awards_share_players_pkey PRIMARY KEY (award_id, year_id, player_id);
-
-
---
--- Name: batting batting_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.batting
-    ADD CONSTRAINT batting_pkey PRIMARY KEY (player_id, year_id, stint, team_id);
-
-
---
--- Name: batting_post batting_post_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.batting_post
-    ADD CONSTRAINT batting_post_pkey PRIMARY KEY (year_id, round_id, player_id);
-
-
---
--- Name: college_playing college_playing_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.college_playing
-    ADD CONSTRAINT college_playing_pkey PRIMARY KEY (player_id, school_id, year_id);
-
-
---
--- Name: fielding_of fielding_of_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.fielding_of
-    ADD CONSTRAINT fielding_of_pkey PRIMARY KEY (player_id, year_id, stint);
-
-
---
--- Name: fielding_of_split fielding_of_split_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.fielding_of_split
-    ADD CONSTRAINT fielding_of_split_pkey PRIMARY KEY (player_id, year_id, stint, team_id, pos);
-
-
---
--- Name: fielding fielding_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.fielding
-    ADD CONSTRAINT fielding_pkey PRIMARY KEY (player_id, year_id, stint, team_id, pos);
-
-
---
--- Name: fielding_post fielding_post_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.fielding_post
-    ADD CONSTRAINT fielding_post_pkey PRIMARY KEY (player_id, year_id, round_id, pos);
-
-
---
--- Name: hall_of_fame hall_of_fame_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.hall_of_fame
-    ADD CONSTRAINT hall_of_fame_pkey PRIMARY KEY (player_id, year_id);
-
-
---
--- Name: home_games home_games_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.home_games
-    ADD CONSTRAINT home_games_pkey PRIMARY KEY (year_id, team_id, park_id);
-
-
---
--- Name: managers_half managers_half_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.managers_half
-    ADD CONSTRAINT managers_half_pkey PRIMARY KEY (player_id, year_id, team_id, inseason, half);
-
-
---
--- Name: managers managers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.managers
-    ADD CONSTRAINT managers_pkey PRIMARY KEY (player_id, year_id, team_id, inseason);
-
-
---
--- Name: parks parks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.parks
-    ADD CONSTRAINT parks_pkey PRIMARY KEY (park_id);
-
-
---
--- Name: people people_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.people
-    ADD CONSTRAINT people_pkey PRIMARY KEY (player_id);
-
-
---
--- Name: pitching pitching_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.pitching
-    ADD CONSTRAINT pitching_pkey PRIMARY KEY (player_id, year_id, stint, team_id);
-
-
---
--- Name: pitching_post pitching_post_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.pitching_post
-    ADD CONSTRAINT pitching_post_pkey PRIMARY KEY (player_id, round_id, year_id);
-
-
---
--- Name: salaries salaries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.salaries
-    ADD CONSTRAINT salaries_pkey PRIMARY KEY (year_id, team_id, player_id);
-
-
---
--- Name: schools schools_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.schools
-    ADD CONSTRAINT schools_pkey PRIMARY KEY (school_id);
-
-
---
--- Name: series_post series_post_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.series_post
-    ADD CONSTRAINT series_post_pkey PRIMARY KEY (year_id, round_id);
-
-
---
--- Name: teams_franchises teams_franchises_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.teams_franchises
-    ADD CONSTRAINT teams_franchises_pkey PRIMARY KEY (franch_id);
-
-
---
--- Name: teams teams_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.teams
-    ADD CONSTRAINT teams_pkey PRIMARY KEY (year_id, team_id);
 
 
 --
