@@ -4,6 +4,11 @@ import zipfile
 import subprocess
 import re
 
+# Database creds
+DB_NAME = 'baseball'
+HOST = 'localhost'
+PORT = '5432'
+
 def remove_line(filename, line_number):
     with open(filename, 'r') as file:
         lines = file.readlines()
@@ -14,14 +19,23 @@ def remove_line(filename, line_number):
                 file.write(line)
                 i += 1
 
+def get_columns(table):
+    select = '''SELECT column_name FROM information_schema.columns
+                where table_catalog = \'baseball\' and table_name = \'{0}\'
+                and column_name != \'id\' order by ordinal_position;'''.format(table)
+    column_names = subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-t', '-c', select], capture_output=True, text=True)
+    return '(' + ','.join(f'"{column_name}"' for column_name in column_names.stdout.split()) + ')'
+
 def get_copy_commands(tables, dir):
-    copy_query = 'COPY %s FROM \'%s/%s\' WITH DELIMITER \',\' CSV HEADER;\n'
     eol_pattern = re.compile(r'$')
     underscore_pattern = re.compile(r'\_')
     copy_commands = ''
     for table in tables:
-        filename = eol_pattern.sub(r'.csv', underscore_pattern.sub(r'', table))
-        copy_commands += copy_query % (table, dir, filename)
+        filename = dir + '/' + eol_pattern.sub(r'.csv', underscore_pattern.sub(r'', table))
+        table = table.lower()
+        copy_query = 'COPY %s %s FROM \'%s\' WITH DELIMITER \',\' CSV HEADER;\n'
+        columns = get_columns(table)
+        copy_commands += copy_query % (table, columns, filename)
     return copy_commands
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -58,21 +72,16 @@ remove_line('%s/HomeGames.csv' % (core_data_dir), 3156)
 remove_line('%s/HomeGames.csv' % (core_data_dir), 3191)
 remove_line('%s/AllstarFull.csv' % (core_data_dir), 69)
 
-# Database creds
-db_name = 'baseball'
-host = 'localhost'
-port = '5432'
-schema_filename = '%s/db/schema.sql' % (PROJECT_ROOT)
-
 print('Creating database named "baseball"...')
 
 # Create database
-subprocess.run(['createdb', db_name])
+subprocess.run(['createdb', DB_NAME])
 
 print('Creating schema for "baseball"...')
+schema_filename = '%s/db/schema.sql' % (PROJECT_ROOT)
 
 # Create schema
-subprocess.run(['psql', '-h', host, '-p', port, '-d', db_name, '-f', schema_filename], stdout=subprocess.DEVNULL)
+subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-f', schema_filename], stdout=subprocess.DEVNULL)
 
 core_tables = [ 'People', 'Teams_Franchises', 'Teams', 'Parks', 'Managers', 'Fielding',
                'Pitching_Post', 'Appearances', 'Batting', 'Managers_Half', 'Fielding_OF',
@@ -84,7 +93,7 @@ copy_commands = get_copy_commands(core_tables, core_data_dir)
 print('Copying core data to "baseball"...')
 
 # Copy core data
-subprocess.run(['psql', '-h', host, '-p', port, '-d', db_name, '-c', copy_commands], stdout=subprocess.DEVNULL)
+subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', copy_commands], stdout=subprocess.DEVNULL)
 
 contrib_tables = [ 'Awards_Managers', 'Awards_Players', 'Awards_Share_Managers',
                   'Awards_Share_Players', 'College_Playing', 'Hall_Of_Fame',
@@ -95,7 +104,7 @@ copy_commands = get_copy_commands(contrib_tables, contrib_data_dir)
 print('Copying contrib data to "baseball"...')
 
 # Copy contrib data
-subprocess.run(['psql', '-h', host, '-p', port, '-d', db_name, '-c', copy_commands], stdout=subprocess.DEVNULL)
+subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', copy_commands], stdout=subprocess.DEVNULL)
 
 # Remove temp directories
 subprocess.run(['rm', '-r', data_dir])
