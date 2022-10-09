@@ -38,6 +38,11 @@ def get_copy_commands(tables, dir):
         copy_commands += copy_query % (table, columns, filename)
     return copy_commands
 
+def get_people_tables():
+    query = 'select table_name from information_schema.columns where column_name = \'people_id\'';
+    table_names = subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-t', '-c', query], capture_output=True, text=True)
+    return table_names.stdout.split()
+
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 version = 'v2022.2'
@@ -105,6 +110,12 @@ print('Copying contrib data to "baseball"...')
 
 # Copy contrib data
 subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', copy_commands], stdout=subprocess.DEVNULL)
+
+# Update people related tables to use primary keys in relation
+people_tables = get_people_tables()
+update_query = 'UPDATE %s SET people_id = people.id FROM people WHERE people.player_id = %s.people_id;'
+for table in people_tables:
+    subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', update_query % (table, table)], stdout=subprocess.DEVNULL)
 
 # Remove temp directories
 subprocess.run(['rm', '-r', data_dir])
