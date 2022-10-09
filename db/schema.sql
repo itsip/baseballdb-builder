@@ -107,9 +107,9 @@ CREATE TABLE public.awards_share_managers (
     year_id integer NOT NULL,
     lg_id character varying,
     player_id character varying NOT NULL,
-    points_won integer,
-    points_max integer,
-    votes_first integer
+    points_won numeric,
+    points_max numeric,
+    votes_first numeric
 );
 
 
@@ -123,9 +123,9 @@ CREATE TABLE public.awards_share_players (
     year_id integer NOT NULL,
     lg_id character varying,
     player_id character varying NOT NULL,
-    points_won integer,
-    points_max integer,
-    votes_first integer
+    points_won numeric,
+    points_max numeric,
+    votes_first numeric
 );
 
 
