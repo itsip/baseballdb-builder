@@ -26,7 +26,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.allstar_full (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     year_id integer NOT NULL,
     game_num integer,
     game_id character varying,
@@ -46,7 +46,7 @@ CREATE TABLE public.appearances (
     year_id integer NOT NULL,
     team_id character varying NOT NULL,
     lg_id character varying,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     g_all integer,
     gs integer,
     g_batting integer,
@@ -73,7 +73,7 @@ CREATE TABLE public.appearances (
 
 CREATE TABLE public.awards_managers (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     award_id character varying NOT NULL,
     year_id integer NOT NULL,
     lg_id character varying,
@@ -88,7 +88,7 @@ CREATE TABLE public.awards_managers (
 
 CREATE TABLE public.awards_players (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     award_id character varying NOT NULL,
     year_id integer NOT NULL,
     lg_id character varying,
@@ -106,7 +106,7 @@ CREATE TABLE public.awards_share_managers (
     award_id character varying NOT NULL,
     year_id integer NOT NULL,
     lg_id character varying,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     points_won numeric,
     points_max numeric,
     votes_first numeric
@@ -122,7 +122,7 @@ CREATE TABLE public.awards_share_players (
     award_id character varying NOT NULL,
     year_id integer NOT NULL,
     lg_id character varying,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     points_won numeric,
     points_max numeric,
     votes_first numeric
@@ -135,7 +135,7 @@ CREATE TABLE public.awards_share_players (
 
 CREATE TABLE public.batting (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     year_id integer NOT NULL,
     stint integer NOT NULL,
     team_id character varying NOT NULL,
@@ -168,7 +168,7 @@ CREATE TABLE public.batting_post (
     id serial primary key,
     year_id integer NOT NULL,
     round_id character varying NOT NULL,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     team_id character varying,
     lg_id character varying,
     g integer,
@@ -197,7 +197,7 @@ CREATE TABLE public.batting_post (
 
 CREATE TABLE public.college_playing (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     school_id character varying NOT NULL,
     year_id integer NOT NULL
 );
@@ -209,7 +209,7 @@ CREATE TABLE public.college_playing (
 
 CREATE TABLE public.fielding (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     year_id integer NOT NULL,
     stint integer NOT NULL,
     team_id character varying NOT NULL,
@@ -236,7 +236,7 @@ CREATE TABLE public.fielding (
 
 CREATE TABLE public.fielding_of (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     year_id integer NOT NULL,
     stint integer NOT NULL,
     g_lf integer,
@@ -251,7 +251,7 @@ CREATE TABLE public.fielding_of (
 
 CREATE TABLE public.fielding_of_split (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     year_id integer NOT NULL,
     stint integer NOT NULL,
     team_id character varying NOT NULL,
@@ -278,7 +278,7 @@ CREATE TABLE public.fielding_of_split (
 
 CREATE TABLE public.fielding_post (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     year_id integer NOT NULL,
     team_id character varying,
     lg_id character varying,
@@ -304,7 +304,7 @@ CREATE TABLE public.fielding_post (
 
 CREATE TABLE public.hall_of_fame (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     year_id integer NOT NULL,
     voted_by character varying,
     ballots integer,
@@ -340,7 +340,7 @@ CREATE TABLE public.home_games (
 
 CREATE TABLE public.managers (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     year_id integer NOT NULL,
     team_id character varying NOT NULL,
     lg_id character varying,
@@ -359,7 +359,7 @@ CREATE TABLE public.managers (
 
 CREATE TABLE public.managers_half (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     year_id integer NOT NULL,
     team_id character varying NOT NULL,
     lg_id character varying,
@@ -426,7 +426,7 @@ CREATE TABLE public.people (
 
 CREATE TABLE public.pitching (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     year_id integer NOT NULL,
     stint integer NOT NULL,
     team_id character varying NOT NULL,
@@ -465,7 +465,7 @@ CREATE TABLE public.pitching (
 
 CREATE TABLE public.pitching_post (
     id serial primary key,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     year_id integer NOT NULL,
     round_id character varying NOT NULL,
     team_id character varying,
@@ -507,7 +507,7 @@ CREATE TABLE public.salaries (
     year_id integer NOT NULL,
     team_id character varying NOT NULL,
     lg_id character varying,
-    people_id character varying NOT NULL,
+    player_id character varying NOT NULL,
     salary integer
 );
 
