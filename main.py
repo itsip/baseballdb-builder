@@ -38,8 +38,10 @@ def get_copy_commands(tables, dir):
         copy_commands += copy_query % (table, columns, filename)
     return copy_commands
 
-def get_people_tables():
-    query = 'select table_name from information_schema.columns where column_name = \'people_id\'';
+def get_tables_with(column, excluded_table = None):
+    query = 'select table_name from information_schema.columns where column_name = \'%s\';' % (column)
+    if excluded_table:
+        query = query[:-1] + ' and table_name != \'%s\';' % (excluded_table)
     table_names = subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-t', '-c', query], capture_output=True, text=True)
     return table_names.stdout.split()
 
@@ -111,11 +113,25 @@ print('Copying contrib data to "baseball"...')
 # Copy contrib data
 subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', copy_commands], stdout=subprocess.DEVNULL)
 
-# Update people related tables to use primary keys in relation
-people_tables = get_people_tables()
-update_query = 'UPDATE %s SET people_id = people.id FROM people WHERE people.player_id = %s.people_id;'
-for table in people_tables:
+# Update related tables to use new primary keys in relation
+player_tables = get_tables_with('player_id', excluded_table='people')
+team_tables = get_tables_with('team_id', excluded_table='teams')
+
+print('Updating table relations...')
+
+update_query = 'UPDATE %s SET player_id = people.id FROM people WHERE people.player_id = %s.player_id;'
+for table in player_tables:
     subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', update_query % (table, table)], stdout=subprocess.DEVNULL)
+
+update_query = 'UPDATE %s SET team_id = teams.id FROM teams WHERE teams.team_id = %s.team_id AND teams.year_id = %s.year_id;'
+for table in team_tables:
+    subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', update_query % (table, table, table)], stdout=subprocess.DEVNULL)
+
+update_query = '''UPDATE college_playing SET school_id = schools.id FROM schools WHERE schools.school_id = college_playing.school_id;
+                  UPDATE teams SET franch_id = teams_franchises.id FROM teams_franchises WHERE teams_franchises.franch_id = teams.franch_id;
+                  UPDATE series_post SET team_id_winner = teams.id FROM teams WHERE series_post.team_id_winner = teams.team_id;
+                  UPDATE series_post SET team_id_loser = teams.id FROM teams WHERE series_post.team_id_loser = teams.team_id;'''
+subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', update_query], stdout=subprocess.DEVNULL)
 
 # Remove temp directories
 subprocess.run(['rm', '-r', data_dir])
