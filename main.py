@@ -162,6 +162,8 @@ print('Adding foreign keys...')
 constraints_filename = '%s/db/constraints.sql' % (PROJECT_ROOT)
 subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-f', constraints_filename], stdout=subprocess.DEVNULL)
 
+print('Cleaning up...')
+
 # Remove temp directories
 subprocess.run(['rm', '-r', data_dir])
 subprocess.run(['rm', '-r', download_dir])
