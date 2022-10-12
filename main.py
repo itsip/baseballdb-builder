@@ -78,6 +78,16 @@ remove_line('%s/FieldingOF.csv' % (core_data_dir), 462)
 remove_line('%s/HomeGames.csv' % (core_data_dir), 3156)
 remove_line('%s/HomeGames.csv' % (core_data_dir), 3191)
 remove_line('%s/AllstarFull.csv' % (core_data_dir), 69)
+remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 5172)
+remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 5173)
+remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 5174)
+remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 5468)
+remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 10709)
+remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 13769)
+remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 13770)
+remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 13771)
+remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 17075)
+remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 17076)
 
 print('Creating database named "baseball"...')
 
@@ -119,19 +129,40 @@ team_tables = get_tables_with('team_id', excluded_table='teams')
 
 print('Updating table relations...')
 
-update_query = 'UPDATE %s SET player_id = people.id FROM people WHERE people.player_id = %s.player_id;'
+update_query = '''UPDATE {0} SET player_id = people.id FROM people WHERE people.player_id = {0}.player_id;
+                  ALTER TABLE {0} ALTER COLUMN player_id TYPE integer USING player_id::integer;'''
+
 for table in player_tables:
-    subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', update_query % (table, table)], stdout=subprocess.DEVNULL)
+    subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', update_query.format(table)], stdout=subprocess.DEVNULL)
 
-update_query = 'UPDATE %s SET team_id = teams.id FROM teams WHERE teams.team_id = %s.team_id AND teams.year_id = %s.year_id;'
+update_query = '''UPDATE {0} SET team_id = teams.id FROM teams WHERE teams.team_id = {0}.team_id AND teams.year_id = {0}.year_id;
+                  ALTER TABLE {0} ALTER COLUMN team_id TYPE integer USING team_id::integer;'''
+
 for table in team_tables:
-    subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', update_query % (table, table, table)], stdout=subprocess.DEVNULL)
+    subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', update_query.format(table)], stdout=subprocess.DEVNULL)
 
-update_query = '''UPDATE college_playing SET school_id = schools.id FROM schools WHERE schools.school_id = college_playing.school_id;
+update_query = '''UPDATE home_games SET park_id = parks.id FROM parks WHERE parks.park_id = home_games.park_id;
+                  ALTER TABLE home_games ALTER COLUMN park_id TYPE integer USING park_id::integer;
+
+                  UPDATE college_playing SET school_id = schools.id FROM schools WHERE schools.school_id = college_playing.school_id;
+                  ALTER TABLE college_playing ALTER COLUMN school_id TYPE integer USING school_id::integer;
+
                   UPDATE teams SET franch_id = teams_franchises.id FROM teams_franchises WHERE teams_franchises.franch_id = teams.franch_id;
+                  ALTER TABLE teams ALTER COLUMN franch_id TYPE integer USING franch_id::integer;
+
                   UPDATE series_post SET team_id_winner = teams.id FROM teams WHERE series_post.team_id_winner = teams.team_id;
-                  UPDATE series_post SET team_id_loser = teams.id FROM teams WHERE series_post.team_id_loser = teams.team_id;'''
+                  ALTER TABLE series_post ALTER COLUMN team_id_winner TYPE integer USING team_id_winner::integer;
+
+                  UPDATE series_post SET team_id_loser = teams.id FROM teams WHERE series_post.team_id_loser = teams.team_id;
+                  ALTER TABLE series_post ALTER COLUMN team_id_loser TYPE integer USING team_id_loser::integer;'''
+
 subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', update_query], stdout=subprocess.DEVNULL)
+
+
+print('Adding foreign keys...')
+constraints_filename = '%s/db/constraints.sql' % (PROJECT_ROOT)
+subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-f', constraints_filename], stdout=subprocess.DEVNULL)
+
 
 # Remove temp directories
 subprocess.run(['rm', '-r', data_dir])
