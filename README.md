@@ -2,6 +2,12 @@
 Python tool for building the [Baseball Databank](https://github.com/chadwickbureau/baseballdatabank)
 as a Postgresql database.
 
+## Usage
+`python main.py`
+
+## Notes
+Certain rows from the sourced data are excluded from the created database due in order to successfully add foreign key constraints.
+
 ## License
 BaseballDB Builder is licensed under the [GNU General Public License v3.0](LICENSE)
 
