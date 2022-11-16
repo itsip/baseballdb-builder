@@ -3,6 +3,7 @@ import urllib.request
 import zipfile
 import subprocess
 import re
+import datafix
 
 # Database creds
 DB_NAME = input('database name: (baseball) ')
@@ -20,16 +21,6 @@ if 'PGPASSWORD' in os.environ:
 
 if PASSWORD != '':
     os.environ['PGPASSWORD'] = PASSWORD
-
-def remove_line(filename, line_number):
-    with open(filename, 'r') as file:
-        lines = file.readlines()
-    with open(filename, 'w') as file:
-        i = 1
-        for line in lines:
-            if i != line_number:
-                file.write(line)
-                i += 1
 
 def get_columns(table):
     select = '''SELECT column_name FROM information_schema.columns
@@ -86,21 +77,7 @@ core_data_dir = '%s/core' % (baseball_data_dir)
 contrib_data_dir = '%s/contrib' % (baseball_data_dir)
 
 # Correct data for integrity purposes
-remove_line('%s/Appearances.csv' % (core_data_dir), 718)
-remove_line('%s/FieldingOF.csv' % (core_data_dir), 462)
-remove_line('%s/HomeGames.csv' % (core_data_dir), 3156)
-remove_line('%s/HomeGames.csv' % (core_data_dir), 3191)
-remove_line('%s/AllstarFull.csv' % (core_data_dir), 69)
-remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 5172)
-remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 5173)
-remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 5174)
-remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 5468)
-remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 10709)
-remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 13769)
-remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 13770)
-remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 13771)
-remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 17075)
-remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 17076)
+datafix.remove_bad_data(baseball_data_dir)
 
 print('Creating database named "%s"...' % DB_NAME)
 
