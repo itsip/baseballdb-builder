@@ -5,9 +5,21 @@ import subprocess
 import re
 
 # Database creds
-DB_NAME = 'baseball'
-HOST = 'localhost'
-PORT = '5432'
+DB_NAME = input('database name: (baseball) ')
+HOST = input('host: (localhost) ')
+PORT = input('port: (5432) ')
+PASSWORD = input('password: () ')
+
+DB_NAME = 'baseball' if DB_NAME == '' else DB_NAME
+HOST = 'localhost' if HOST == '' else HOST
+PORT = '5432' if PORT == '' else PORT
+
+OLD_PASSWORD = None
+if 'PGPASSWORD' in os.environ:
+    OLD_PASSWORD = os.environ['PGPASSWORD']
+
+if PASSWORD != '':
+    os.environ['PGPASSWORD'] = PASSWORD
 
 def remove_line(filename, line_number):
     with open(filename, 'r') as file:
@@ -21,8 +33,8 @@ def remove_line(filename, line_number):
 
 def get_columns(table):
     select = '''SELECT column_name FROM information_schema.columns
-                where table_catalog = \'baseball\' and table_name = \'{0}\'
-                and column_name != \'id\' order by ordinal_position;'''.format(table)
+                where table_catalog = \'{0}\' and table_name = \'{1}\'
+                and column_name != \'id\' order by ordinal_position;'''.format(DB_NAME, table)
     column_names = subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-t', '-c', select], capture_output=True, text=True)
     return '(' + ','.join(f'"{column_name}"' for column_name in column_names.stdout.split()) + ')'
 
@@ -44,6 +56,7 @@ def get_tables_with(column, excluded_table = None):
         query = query[:-1] + ' and table_name != \'%s\';' % (excluded_table)
     table_names = subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-t', '-c', query], capture_output=True, text=True)
     return table_names.stdout.split()
+
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -89,12 +102,12 @@ remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 13771)
 remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 17075)
 remove_line('%s/CollegePlaying.csv' % (contrib_data_dir), 17076)
 
-print('Creating database named "baseball"...')
+print('Creating database named "%s"...' % DB_NAME)
 
 # Create database
 subprocess.run(['createdb', DB_NAME])
 
-print('Creating schema for "baseball"...')
+print('Creating schema for "%s"...' % DB_NAME)
 schema_filename = '%s/db/schema.sql' % (PROJECT_ROOT)
 
 # Create schema
@@ -107,7 +120,7 @@ core_tables = [ 'People', 'Teams_Franchises', 'Teams', 'Parks', 'Managers', 'Fie
 
 copy_commands = get_copy_commands(core_tables, core_data_dir)
 
-print('Copying core data to "baseball"...')
+print('Copying core data to "%s"...' % DB_NAME)
 
 # Copy core data
 subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', copy_commands], stdout=subprocess.DEVNULL)
@@ -118,7 +131,7 @@ contrib_tables = [ 'Awards_Managers', 'Awards_Players', 'Awards_Share_Managers',
 
 copy_commands = get_copy_commands(contrib_tables, contrib_data_dir)
 
-print('Copying contrib data to "baseball"...')
+print('Copying contrib data to "%s"...' % DB_NAME)
 
 # Copy contrib data
 subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', copy_commands], stdout=subprocess.DEVNULL)
@@ -167,5 +180,11 @@ print('Cleaning up...')
 # Remove temp directories
 subprocess.run(['rm', '-r', data_dir])
 subprocess.run(['rm', '-r', download_dir])
+
+# Restore environment variables
+if 'PGPASSWORD' in os.environ:
+    del os.environ['PGPASSWORD']
+if OLD_PASSWORD:
+    os.environ['PGPASSWORD'] = OLD_PASSWORD
 
 print('Success')
