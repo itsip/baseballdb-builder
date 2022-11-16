@@ -3,7 +3,7 @@ Python tool for building the [Baseball Databank](https://github.com/chadwickbure
 as a Postgresql database.
 
 ## Usage
-`python main.py`
+`python builder.py`
 
 ## Notes
 Certain rows from the sourced data are excluded from the created database due in order to successfully add foreign key constraints.
