@@ -1,3 +1,5 @@
+DIR = None
+
 FILES = [ { 'filename': 'core/Appearances.csv', 'lines': [718] },
           { 'filename': 'core/FieldingOF.csv', 'lines': [462] },
           { 'filename': 'core/HomeGames.csv', 'lines': [3156, 3158, 3168, 3191, 3193, 3194] },
@@ -13,6 +15,6 @@ def remove_lines(filename, line_numbers):
             if line_number not in line_numbers:
                 file.write(line)
 
-def remove_bad_data(dir):
+def remove_bad_data():
     for file in FILES:
         remove_lines('%s/%s' % (dir, file['filename']), file['lines'])
