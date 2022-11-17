@@ -17,4 +17,4 @@ def remove_lines(filename, line_numbers):
 
 def remove_bad_data():
     for file in FILES:
-        remove_lines('%s/%s' % (dir, file['filename']), file['lines'])
+        remove_lines('%s/%s' % (DIR, file['filename']), file['lines'])
