@@ -1,19 +1,18 @@
-files = [ { 'filename': 'core/Appearances.csv', 'lines': [718] },
+FILES = [ { 'filename': 'core/Appearances.csv', 'lines': [718] },
           { 'filename': 'core/FieldingOF.csv', 'lines': [462] },
-          { 'filename': 'core/HomeGames.csv', 'lines': [3156, 3191] },
-          { 'filename': 'core/AllstarFull.csv', 'lines': [69] },
+          { 'filename': 'core/HomeGames.csv', 'lines': [3156, 3158, 3168, 3191, 3193, 3194] },
           { 'filename': 'contrib/CollegePlaying.csv', 'lines': [5172, 5173, 5174, 5468, 10709, 13769, 13770, 13771, 17075, 17076] } ]
 
-def remove_lines(filename, lines):
+POST_DB_FIXES = [ {'table': 'allstar_full', 'column': 'team_id', 'old': 'MLN', 'new': 'ML1'} ]
+
+def remove_lines(filename, line_numbers):
     with open(filename, 'r') as file:
         lines = file.readlines()
     with open(filename, 'w') as file:
-        i = 1
-        for line in lines:
-            if i not in lines:
+        for line_number, line in enumerate(lines, 1):
+            if line_number not in line_numbers:
                 file.write(line)
-                i += 1
 
 def remove_bad_data(dir):
-    for file in files:
+    for file in FILES:
         remove_lines('%s/%s' % (dir, file['filename']), file['lines'])
