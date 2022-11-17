@@ -1,3 +1,4 @@
 data
 download
-.python-version
+__pycache__
+*.bak
