@@ -3,30 +3,21 @@ import urllib.request
 import zipfile
 import subprocess
 import re
+import database
 import datafix
 
-# Database creds
-DB_NAME = input('database name: (baseball) ')
-HOST = input('host: (localhost) ')
-PORT = input('port: (5432) ')
-PASSWORD = input('password: () ')
-
-DB_NAME = 'baseball' if DB_NAME == '' else DB_NAME
-HOST = 'localhost' if HOST == '' else HOST
-PORT = '5432' if PORT == '' else PORT
-
-OLD_PASSWORD = None
-if 'PGPASSWORD' in os.environ:
-    OLD_PASSWORD = os.environ['PGPASSWORD']
-
-if PASSWORD != '':
-    os.environ['PGPASSWORD'] = PASSWORD
+# Prompt for database credentials
+database.db_name = input('database name: (baseball) ')
+database.host = input('host: (localhost) ')
+database.port = input('port: (5432) ')
+database.password = input('password: () ')
+database.setup_password()
 
 def get_columns(table):
-    select = '''SELECT column_name FROM information_schema.columns
+    query = '''SELECT column_name FROM information_schema.columns
                 where table_catalog = \'{0}\' and table_name = \'{1}\'
                 and column_name != \'id\' order by ordinal_position;'''.format(DB_NAME, table)
-    column_names = subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-t', '-c', select], capture_output=True, text=True)
+    column_names = database.query(query, return_output=True)
     return '(' + ','.join(f'"{column_name}"' for column_name in column_names.stdout.split()) + ')'
 
 def get_copy_commands(tables, dir):
@@ -45,18 +36,17 @@ def get_tables_with(column, excluded_table = None):
     query = 'select table_name from information_schema.columns where column_name = \'%s\';' % (column)
     if excluded_table:
         query = query[:-1] + ' and table_name != \'%s\';' % (excluded_table)
-    table_names = subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-t', '-c', query], capture_output=True, text=True)
+    table_names = database.query(query, return_output=True)
     return table_names.stdout.split()
 
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+VERSION = 'v2022.2'
 
-version = 'v2022.2'
-
-url = 'https://github.com/chadwickbureau/baseballdatabank/archive/refs/tags/%s.zip' % (version)
+url = 'https://github.com/chadwickbureau/baseballdatabank/archive/refs/tags/%s.zip' % (VERSION)
 download_dir = '%s/download' % (PROJECT_ROOT)
 subprocess.run(['mkdir', download_dir])
-filename = '%s/%s.zip' % (download_dir, version)
+filename = '%s/%s.zip' % (download_dir, VERSION)
 
 print('Downloading baseball data...')
 
@@ -88,7 +78,7 @@ print('Creating schema for "%s"...' % DB_NAME)
 schema_filename = '%s/db/schema.sql' % (PROJECT_ROOT)
 
 # Create schema
-subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-f', schema_filename], stdout=subprocess.DEVNULL)
+database.query_with_file(schema_filename)
 
 core_tables = [ 'People', 'Teams_Franchises', 'Teams', 'Parks', 'Managers', 'Fielding',
                'Pitching_Post', 'Appearances', 'Batting', 'Managers_Half', 'Fielding_OF',
@@ -100,7 +90,7 @@ copy_commands = get_copy_commands(core_tables, core_data_dir)
 print('Copying core data to "%s"...' % DB_NAME)
 
 # Copy core data
-subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', copy_commands], stdout=subprocess.DEVNULL)
+database.query(copy_commands)
 
 contrib_tables = [ 'Awards_Managers', 'Awards_Players', 'Awards_Share_Managers',
                   'Awards_Share_Players', 'College_Playing', 'Hall_Of_Fame',
@@ -111,7 +101,7 @@ copy_commands = get_copy_commands(contrib_tables, contrib_data_dir)
 print('Copying contrib data to "%s"...' % DB_NAME)
 
 # Copy contrib data
-subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', copy_commands], stdout=subprocess.DEVNULL)
+database.query(copy_commands)
 
 # Update related tables to use new primary keys in relation
 player_tables = get_tables_with('player_id', excluded_table='people')
@@ -123,13 +113,13 @@ update_query = '''UPDATE {0} SET player_id = people.id FROM people WHERE people.
                   ALTER TABLE {0} ALTER COLUMN player_id TYPE integer USING player_id::integer;'''
 
 for table in player_tables:
-    subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', update_query.format(table)], stdout=subprocess.DEVNULL)
+    database.query(update_query.format(table))
 
 update_query = '''UPDATE {0} SET team_id = teams.id FROM teams WHERE teams.team_id = {0}.team_id AND teams.year_id = {0}.year_id;
                   ALTER TABLE {0} ALTER COLUMN team_id TYPE integer USING team_id::integer;'''
 
 for table in team_tables:
-    subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', update_query.format(table)], stdout=subprocess.DEVNULL)
+    database.query(update_query.format(table))
 
 update_query = '''UPDATE home_games SET park_id = parks.id FROM parks WHERE parks.park_id = home_games.park_id;
                   ALTER TABLE home_games ALTER COLUMN park_id TYPE integer USING park_id::integer;
@@ -146,22 +136,19 @@ update_query = '''UPDATE home_games SET park_id = parks.id FROM parks WHERE park
                   UPDATE series_post SET team_id_loser = teams.id FROM teams WHERE series_post.team_id_loser = teams.team_id;
                   ALTER TABLE series_post ALTER COLUMN team_id_loser TYPE integer USING team_id_loser::integer;'''
 
-subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-c', update_query], stdout=subprocess.DEVNULL)
+database.query(update_query)
 
 print('Adding foreign keys...')
 constraints_filename = '%s/db/constraints.sql' % (PROJECT_ROOT)
-subprocess.run(['psql', '-h', HOST, '-p', PORT, '-d', DB_NAME, '-f', constraints_filename], stdout=subprocess.DEVNULL)
+database.query_with_file(constraints_filename)
 
 print('Cleaning up...')
 
 # Remove temp directories
 subprocess.run(['rm', '-r', data_dir])
-subprocess.run(['rm', '-r', download_dir])
+# subprocess.run(['rm', '-r', download_dir])
 
 # Restore environment variables
-if 'PGPASSWORD' in os.environ:
-    del os.environ['PGPASSWORD']
-if OLD_PASSWORD:
-    os.environ['PGPASSWORD'] = OLD_PASSWORD
+database.restore_password()
 
 print('Success')
