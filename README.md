@@ -6,7 +6,9 @@ as a Postgresql database.
 `python build.py`
 
 ## Notes
-Certain rows from the sourced data are excluded from the created Postgresql database in order to successfully add foreign key constraints.
+Certain rows from the sourced data are excluded from the created Postgresql database in order to successfully add foreign keys.
+
+See [datafix.py](datafix.py) for more details.
 
 ## License
 BaseballDB Builder is licensed under the [GNU General Public License v3.0](LICENSE)
