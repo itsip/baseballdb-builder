@@ -5,7 +5,6 @@ import subprocess
 db_name = 'baseball'
 host = 'localhost'
 port = '5432'
-password = ''
 old_password = None
 command = ['psql', '-h', host, '-p', port, '-d', db_name]
 DIR = None
@@ -18,21 +17,31 @@ CONTRIB_TABLES = [ 'Awards_Managers', 'Awards_Players', 'Awards_Share_Managers',
                   'Awards_Share_Players', 'College_Playing', 'Hall_Of_Fame',
                   'Salaries', 'Schools' ]
 
-def setup_password():
-    if 'PGPASSWORD' in os.environ:
-        old_password = os.environ['PGPASSWORD']
+def setup(name, hst, prt, pswd):
+   global db_name, host, port, password
+   db_name = name if name != '' else db_name
+   host = hst if hst != '' else host
+   port = prt if prt != '' else port
+   password = pswd if pswd != '' else ''
 
-    if password != '':
-        os.environ['PGPASSWORD'] = password
+   if 'PGPASSWORD' in os.environ:
+       global old_password
+       old_password = os.environ['PGPASSWORD']
 
-def restore_password():
+   if password != '':
+       os.environ['PGPASSWORD'] = password
+
+def cleanup():
     if 'PGPASSWORD' in os.environ:
         del os.environ['PGPASSWORD']
     if old_password:
         os.environ['PGPASSWORD'] = old_password
 
 def query(query, return_output=False):
-    return subprocess.run(command + ['-c', query], stdout=subprocess.DEVNULL, capture_output=return_output, text=return_output)
+    if return_output:
+        return subprocess.run(command + ['-t', '-c', query], capture_output=True, text=True)
+
+    return subprocess.run(command + ['-c', query], stdout=subprocess.DEVNULL)
 
 def query_with_file(file):
     subprocess.run(command + ['-f', file], stdout=subprocess.DEVNULL)

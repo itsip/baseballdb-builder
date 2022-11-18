@@ -9,11 +9,12 @@ PROJECT_ROOT = database.PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__)
 VERSION = 'v2022.2'
 
 # Prompt for database credentials
-database.db_name = input('database name: (baseball) ')
-database.host = input('host: (localhost) ')
-database.port = input('port: (5432) ')
-database.password = input('password: () ')
-database.setup_password()
+db_name = input('database name: (baseball) ')
+host = input('host: (localhost) ')
+port = input('port: (5432) ')
+password = input('password: () ')
+
+database.setup(db_name, host, port, password)
 
 # Download baseball data
 print('Downloading baseball data...')
@@ -62,6 +63,6 @@ subprocess.run(['rm', '-r', data_dir])
 subprocess.run(['rm', '-r', download_dir])
 
 # Restore environment variables
-database.restore_password()
+database.cleanup()
 
 print('Success')
