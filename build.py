@@ -34,7 +34,7 @@ with zipfile.ZipFile(filename) as archive:
 
 database.DIR = datafix.DIR = '%s/baseballdatabank-%s' % (data_dir, VERSION[1:])
 
-# Correct csv data for integrity purposes
+# Remove bad CSV data
 datafix.remove_bad_data()
 
 # Create database
@@ -48,6 +48,10 @@ database.create_schema()
 # Copy data to database
 print('Copying data to "%s"...' % database.db_name)
 database.copy_data()
+
+# Make corrections to data in db
+query = datafix.get_corrections()
+database.query(query)
 
 # Update related tables to use new primary keys in relation
 print('Updating relationships...')
