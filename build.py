@@ -54,7 +54,7 @@ database.copy_data()
 query = datafix.get_corrections()
 database.query(query)
 
-# Update related tables to use new primary keys in relation
+# Update related tables to use new primary keys for relationships
 print('Updating relationships...')
 database.update_relationships()
 
