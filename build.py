@@ -9,7 +9,8 @@ PROJECT_ROOT = database.PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__)
 VERSION = 'v2022.2'
 
 # Prompt for database credentials
-db_name = input('database name: (baseball) ')
+print('This utility will create a new PostgreSQL database populated with baseball data.\n')
+db_name = input('new database name: (baseball) ')
 host = input('host: (localhost) ')
 port = input('port: (5432) ')
 password = input('password: () ')
