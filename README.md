@@ -1,12 +1,20 @@
 # BaseballDB Builder
-Python tool for building the [Baseball Databank](https://github.com/chadwickbureau/baseballdatabank)
-as a Postgresql database.
+Python utility for building the [Baseball Databank](https://github.com/chadwickbureau/baseballdatabank)
+as a PostgreSQL database.
+
+## Requiremenets
+[Python 3.7+](https://www.python.org/downloads)
+
+[PostgreSQL 10+](https://www.postgresql.org/download)
 
 ## Usage
+To create a PostgreSQL database populated with data from the [Baseball Databank](https://github.com/chadwickbureau/baseballdatabank),
+run:
+
 `python build.py`
 
 ## Notes
-Certain rows from the sourced data are excluded from the created Postgresql database in order to successfully add foreign keys.
+Certain rows from the sourced data are excluded from the created PostgreSQL database in order to successfully add foreign keys.
 
 See [datafix.py](datafix.py) for more details.
 
